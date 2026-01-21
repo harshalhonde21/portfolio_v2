@@ -1,20 +1,24 @@
 "use client";
 
-import { useState, useRef, useEffect, KeyboardEvent } from "react";
+import { useState, useRef, useEffect, KeyboardEvent, useCallback } from "react";
 import {
   motion,
   PanInfo,
   useDragControls,
   useMotionValue,
 } from "framer-motion";
-import { executeCommand, CommandOutput } from "@/lib/utils/terminalCommands";
-import {
-  X,
-  Minimize2,
-  Maximize2,
-  Terminal as TerminalIcon,
-} from "lucide-react";
+import { X, Maximize2, Terminal as TerminalIcon } from "lucide-react";
 import { MatrixEffect } from "./MatrixEffect";
+import {
+  registry,
+  initializeCommands,
+  eventLogger,
+  type TerminalContext,
+  type CommandOutput,
+} from "@/lib/terminal";
+
+// Initialize commands on module load
+initializeCommands();
 
 interface TerminalLine {
   type: "input" | "output";
@@ -33,7 +37,7 @@ export function CyberpunkTerminal({ onClose }: CyberpunkTerminalProps) {
     {
       type: "output",
       content:
-        '█ █ ▄▀█ █▀█ █▀ █ █ ▄▀█ █   █ █ █▀█ █▄ █ █▀▄ █▀▀\n█▀█ █▀█ █▀▄ ▄█ █▀█ █▀█ █▄▄ █▀█ █▄█ █ ▀█ █▄▀ █▄▄\n\nWelcome to TERMINAL v1.0.0\nType "help" for available commands.\n',
+        '█ █ ▄▀█ █▀█ █▀ █ █ ▄▀█ █   █ █ █▀█ █▄ █ █▀▄ █▀▀\n█▀█ █▀█ █▀▄ ▄█ █▀█ █▀█ █▄▄ █▀█ █▄█ █ ▀█ █▄▀ █▄▄\n\nWelcome to TERMINAL v2.0.0\nType "help" for available commands.\n',
       outputType: "text",
     },
   ]);
@@ -44,10 +48,43 @@ export function CyberpunkTerminal({ onClose }: CyberpunkTerminalProps) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [size, setSize] = useState({ width: 850, height: 550 });
   const [isResizing, setIsResizing] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const [logStreamActive, setLogStreamActive] = useState(false);
+  const [sessionStart] = useState(() => Date.now());
 
   const inputRef = useRef<HTMLInputElement>(null);
   const outputRef = useRef<HTMLDivElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
+
+  // Callback to append output (for streaming)
+  const appendOutput = useCallback((output: CommandOutput) => {
+    setLines((prev) => [
+      ...prev,
+      {
+        type: "output",
+        content: output.content,
+        outputType: output.type,
+      },
+    ]);
+  }, []);
+
+  // Build terminal context
+  const getContext = useCallback(
+    (): TerminalContext => ({
+      theme,
+      sessionStart,
+      currentRoute:
+        typeof window !== "undefined" ? window.location.pathname : "/",
+      reducedMotion,
+      logStreamActive,
+      callbacks: {
+        setReducedMotion,
+        setLogStreamActive,
+        appendOutput,
+      },
+    }),
+    [theme, sessionStart, reducedMotion, logStreamActive, appendOutput],
+  );
 
   // Auto-scroll to bottom when new lines are added
   useEffect(() => {
@@ -61,7 +98,16 @@ export function CyberpunkTerminal({ onClose }: CyberpunkTerminalProps) {
     inputRef.current?.focus();
   }, []);
 
-  const handleCommand = (cmd: string) => {
+  // Log terminal open event
+  useEffect(() => {
+    eventLogger.log({
+      timestamp: Date.now(),
+      type: "command",
+      message: "Terminal session started",
+    });
+  }, []);
+
+  const handleCommand = async (cmd: string) => {
     if (!cmd.trim()) return;
 
     // Add command to history
@@ -71,8 +117,16 @@ export function CyberpunkTerminal({ onClose }: CyberpunkTerminalProps) {
     // Add input line
     setLines((prev) => [...prev, { type: "input", content: cmd }]);
 
-    // Execute command
-    const output: CommandOutput = executeCommand(cmd);
+    // Log command
+    eventLogger.log({
+      timestamp: Date.now(),
+      type: "command",
+      message: `Executed: ${cmd}`,
+    });
+
+    // Execute command via registry
+    const context = getContext();
+    const output = await registry.execute(cmd, context);
 
     // Handle clear command
     if (output.content === "__CLEAR__") {
@@ -90,6 +144,11 @@ export function CyberpunkTerminal({ onClose }: CyberpunkTerminalProps) {
     // Handle matrix command
     if (output.content === "__MATRIX__") {
       setTheme("hacker");
+      eventLogger.log({
+        timestamp: Date.now(),
+        type: "theme_change",
+        message: "Theme changed to hacker",
+      });
       setLines((prev) => [
         ...prev,
         {
@@ -98,6 +157,7 @@ export function CyberpunkTerminal({ onClose }: CyberpunkTerminalProps) {
           outputType: "text",
         },
       ]);
+      setInput("");
       return;
     }
 
@@ -158,7 +218,7 @@ export function CyberpunkTerminal({ onClose }: CyberpunkTerminalProps) {
 
   const handleDragEnd = (
     _: MouseEvent | TouchEvent | PointerEvent,
-    info: PanInfo
+    info: PanInfo,
   ) => {
     setPosition((prev) => ({
       x: prev.x + info.offset.x,
@@ -226,6 +286,16 @@ export function CyberpunkTerminal({ onClose }: CyberpunkTerminalProps) {
     setIsMaximized(!isMaximized);
   };
 
+  // Handle theme change logging
+  const handleThemeChange = (newTheme: "neon" | "hacker" | "red") => {
+    setTheme(newTheme);
+    eventLogger.log({
+      timestamp: Date.now(),
+      type: "theme_change",
+      message: `Theme changed to ${newTheme}`,
+    });
+  };
+
   // Lock body scroll when terminal is open
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -246,10 +316,6 @@ export function CyberpunkTerminal({ onClose }: CyberpunkTerminalProps) {
         scale: 1,
         width: isMaximized ? "100vw" : size.width,
         height: isMaximized ? "100vh" : size.height,
-        // When maximized, we force x/y to 0 (relative to center)
-        // effectively ignoring the drag offset visually,
-        // but we keep the state intact.
-        // Actually, better to animate x/y to 0 when maximized.
         x: isMaximized ? 0 : position.x,
         y: isMaximized ? 0 : position.y,
       }}
@@ -285,7 +351,7 @@ export function CyberpunkTerminal({ onClose }: CyberpunkTerminalProps) {
         <div className="flex items-center gap-2">
           <TerminalIcon className="w-4 h-4 text-primary" />
           <span className="text-xs font-mono uppercase tracking-wider text-primary">
-            SYS_ROOT://NET_RUNNER_V1.0
+            SYS_ROOT://NET_RUNNER_V2.0
           </span>
         </div>
 
@@ -293,7 +359,7 @@ export function CyberpunkTerminal({ onClose }: CyberpunkTerminalProps) {
           {/* Theme Switcher */}
           <div className="flex items-center gap-1 bg-black/50 rounded p-0.5 border border-primary/20">
             <button
-              onClick={() => setTheme("neon")}
+              onClick={() => handleThemeChange("neon")}
               className={`px-2 py-0.5 text-[10px] font-mono uppercase transition-colors rounded-sm ${
                 theme === "neon"
                   ? "bg-primary/20 text-primary"
@@ -304,7 +370,7 @@ export function CyberpunkTerminal({ onClose }: CyberpunkTerminalProps) {
               NEON
             </button>
             <button
-              onClick={() => setTheme("hacker")}
+              onClick={() => handleThemeChange("hacker")}
               className={`px-2 py-0.5 text-[10px] font-mono uppercase transition-colors rounded-sm ${
                 theme === "hacker"
                   ? "bg-green-500/20 text-green-500"
@@ -315,7 +381,7 @@ export function CyberpunkTerminal({ onClose }: CyberpunkTerminalProps) {
               HACK
             </button>
             <button
-              onClick={() => setTheme("red")}
+              onClick={() => handleThemeChange("red")}
               className={`px-2 py-0.5 text-[10px] font-mono uppercase transition-colors rounded-sm ${
                 theme === "red"
                   ? "bg-red-500/20 text-red-500"

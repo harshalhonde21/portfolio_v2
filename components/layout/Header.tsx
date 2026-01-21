@@ -3,10 +3,16 @@
 import { PERSONAL_INFO } from "@/lib/constants/portfolio";
 import { Navigation } from "@/components/layout/Navigation";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { XRayToggle } from "@/components/xray/XRayToggle";
+import { DegradationSelector } from "@/components/performance/DegradationSelector";
+import { NarrationToggle } from "@/components/narration/NarrationToggle";
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-primary/30 bg-background/95 backdrop-blur-md shadow-glow-sm">
+    <header
+      id="header"
+      className="sticky top-0 z-50 w-full border-b border-primary/30 bg-background/95 backdrop-blur-md shadow-glow-sm"
+    >
       <div className="container mx-auto px-4 md:px-6 max-w-6xl">
         <div className="flex h-16 items-center justify-between">
           {/* Logo - Terminal style */}
@@ -22,9 +28,12 @@ export function Header() {
             </span>
           </a>
 
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-2">
             <Navigation />
             <div className="w-px h-6 bg-primary/30" />
+            <DegradationSelector />
+            <NarrationToggle />
+            <XRayToggle />
             <ThemeToggle />
           </div>
         </div>

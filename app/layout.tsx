@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { PerformanceWrapper } from "@/components/providers/PerformanceWrapper";
+import { NarrationWrapper } from "@/components/providers/NarrationWrapper";
+import { XRayWrapper } from "@/components/providers/XRayWrapper";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
@@ -46,12 +49,18 @@ export default function RootLayout({
           themes={["cyberpunk-dark", "cyberpunk-light"]}
           disableTransitionOnChange
         >
-          <div className="relative flex min-h-screen flex-col">
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-            <ScrollToTop />
-          </div>
+          <PerformanceWrapper>
+            <NarrationWrapper>
+              <XRayWrapper>
+                <div className="relative flex min-h-screen flex-col">
+                  <Header />
+                  <main className="flex-1">{children}</main>
+                  <Footer />
+                  <ScrollToTop />
+                </div>
+              </XRayWrapper>
+            </NarrationWrapper>
+          </PerformanceWrapper>
         </ThemeProvider>
       </body>
     </html>

@@ -4,7 +4,10 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative border-t border-primary/30 bg-card/50 backdrop-blur-sm">
+    <footer
+      id="footer"
+      className="relative border-t border-primary/30 bg-card/50 backdrop-blur-sm"
+    >
       {/* Top neon line */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent shadow-glow-sm" />
 
