@@ -63,20 +63,11 @@ export const SECTION_ARCHITECTURE: Record<string, SectionMeta> = {
     dataSource: 'static',
     rationale: 'Client-side for project card interactions',
     layer: 'content',
-    dependencies: ['gallery'],
+
     labelPosition: 'top-left',
   },
 
-  // Gallery Section
-  gallery: {
-    id: 'gallery',
-    label: 'Gallery',
-    componentType: 'client',
-    dataSource: 'static',
-    rationale: 'Client-side for lightbox and image transitions',
-    layer: 'content',
-    labelPosition: 'top-left',
-  },
+
 
   // Contact Section
   contact: {

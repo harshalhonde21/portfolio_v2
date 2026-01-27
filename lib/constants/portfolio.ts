@@ -13,12 +13,12 @@ export const PERSONAL_INFO: PersonalInfo = {
 export const SOCIAL_LINKS: SocialLink[] = [
   {
     platform: 'GitHub',
-    url: 'https://github.com/harshalhonde',
+    url: 'https://github.com/harshalhonde21',
     icon: 'github',
   },
   {
     platform: 'LinkedIn',
-    url: 'https://www.linkedin.com/in/harshal-honde',
+    url: 'https://www.linkedin.com/in/harshalhonde',
     icon: 'linkedin',
   },
   {
@@ -95,7 +95,7 @@ export const PROJECTS: Project[] = [
     description: 'Full-stack e-commerce website built with the MERN stack. Features end-to-end encrypted website, from listing products to ordering, using the Stripe payment gateway. Selected in GSSOC\'24 among 200 Projects in 13 Countries with 100+ Stars.',
     image: '/images/projects/spectastyle.jpg',
     technologies: ['React', 'Node.js', 'MongoDB', 'Express.js', 'Stripe'],
-    githubUrl: 'https://github.com/harshalhonde/SpectaStyle',
+    githubUrl: 'https://github.com/harshalhonde21/EcommerceSpectastyle',
     featured: true,
   },
   {
@@ -104,7 +104,7 @@ export const PROJECTS: Project[] = [
     description: 'Real-world project that prioritizes court cases based on a Machine Learning model, ensuring that cases needing urgent attention are addressed first.',
     image: '/images/projects/court-case.jpg',
     technologies: ['Python', 'Machine Learning', 'React', 'Node.js'],
-    githubUrl: 'https://github.com/harshalhonde/court-case-priority',
+    githubUrl: 'https://github.com/harshalhonde21/technex24',
     featured: true,
   },
 ];
