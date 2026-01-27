@@ -9,6 +9,7 @@ import { GlitchText } from "@/components/effects/GlitchText";
 import { CyberpunkGrid } from "@/components/effects/CyberpunkGrid";
 import { Scanlines } from "@/components/effects/Scanlines";
 import { TerminalButton } from "@/components/ui/TerminalButton";
+import { ResumeButton } from "@/components/ui/ResumeButton";
 import { CyberpunkTerminal } from "@/components/ui/CyberpunkTerminal";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -72,6 +73,7 @@ export function Hero() {
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <TerminalButton onClick={() => setIsTerminalOpen(true)} />
+          <ResumeButton />
         </motion.div>
 
         {/* System status indicator */}

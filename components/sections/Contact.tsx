@@ -41,7 +41,7 @@ export function Contact() {
           <p className="text-primary font-mono text-xs mb-2 uppercase tracking-wider">
             <span className="text-neon-cyan">&gt;</span> Section_05
           </p>
-          <Heading as="h2" className="neon-text">
+          <Heading as="h2" className="neon-text break-words">
             [Establish_Connection]
           </Heading>
         </div>

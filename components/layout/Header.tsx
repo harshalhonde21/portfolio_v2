@@ -6,6 +6,7 @@ import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { XRayToggle } from "@/components/xray/XRayToggle";
 import { DegradationSelector } from "@/components/performance/DegradationSelector";
 import { NarrationToggle } from "@/components/narration/NarrationToggle";
+import { MobileNav } from "@/components/layout/MobileNav";
 
 export function Header() {
   return (
@@ -36,6 +37,9 @@ export function Header() {
             <XRayToggle />
             <ThemeToggle />
           </div>
+
+          {/* Mobile Navigation */}
+          <MobileNav />
         </div>
       </div>
 

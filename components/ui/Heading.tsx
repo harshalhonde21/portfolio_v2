@@ -15,7 +15,7 @@ export function Heading({
 }: HeadingProps) {
   const styles = {
     h1: "text-4xl md:text-6xl lg:text-7xl font-black font-display tracking-wider uppercase leading-tight",
-    h2: "text-3xl md:text-5xl font-bold font-display tracking-wider uppercase leading-tight",
+    h2: "text-xl md:text-5xl font-bold font-display tracking-wider uppercase leading-tight",
     h3: "text-2xl md:text-3xl font-bold font-display uppercase tracking-wide leading-snug",
     h4: "text-xl md:text-2xl font-semibold font-display uppercase tracking-wide leading-snug",
     h5: "text-lg md:text-xl font-semibold font-mono uppercase tracking-widest leading-normal",
@@ -28,6 +28,6 @@ export function Heading({
       className: cn(styles[as], className),
       ...props,
     },
-    children
+    children,
   );
 }
