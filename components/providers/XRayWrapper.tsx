@@ -7,6 +7,7 @@
 
 import { XRayProvider } from "@/lib/xray/XRayContext";
 import { XRayOverlay } from "@/components/xray/XRayOverlay";
+import { XRayScanner } from "@/components/xray/XRayScanner";
 import { ReactNode } from "react";
 
 interface XRayWrapperProps {
@@ -18,6 +19,7 @@ export function XRayWrapper({ children }: XRayWrapperProps) {
     <XRayProvider>
       {children}
       <XRayOverlay />
+      <XRayScanner />
     </XRayProvider>
   );
 }
