@@ -3,7 +3,7 @@ import type { NavItem } from '@/types';
 export const SITE_CONFIG = {
   name: 'Harshal Honde Portfolio',
   description: 'Software Engineer portfolio showcasing production-grade backend systems, full-stack projects, and scalable architectures',
-  url: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
+  url: process.env.NEXT_PUBLIC_BASE_URL || 'https://www.harshalhonde.com',
   ogImage: '/images/og-image.jpg',
   twitterHandle: '@harshalhonde',
 };

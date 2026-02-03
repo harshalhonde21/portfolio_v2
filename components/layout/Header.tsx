@@ -22,7 +22,7 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo - Terminal style */}
           <a
-            href="#"
+            href="/"
             className="group flex items-center gap-2 focus-outline rounded-sm"
           >
             <span className="text-primary font-mono text-lg font-bold tracking-wider uppercase">
