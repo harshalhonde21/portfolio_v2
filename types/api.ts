@@ -33,6 +33,7 @@ export interface Contact extends ContactFormInput {
 }
 
 export interface AdminUser {
+  user: any;
   _id: string;
   name: string;
   email: string;
