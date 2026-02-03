@@ -3,6 +3,8 @@ import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { PerformanceWrapper } from "@/components/providers/PerformanceWrapper";
 import { NarrationWrapper } from "@/components/providers/NarrationWrapper";
 import { XRayWrapper } from "@/components/providers/XRayWrapper";
+import { AdminAuthProvider } from "@/components/providers/AdminAuthProvider";
+import { HackerLobby } from "@/components/admin/HackerLobby";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
@@ -52,12 +54,15 @@ export default function RootLayout({
           <PerformanceWrapper>
             <NarrationWrapper>
               <XRayWrapper>
-                <div className="relative flex min-h-screen flex-col">
-                  <Header />
-                  <main className="flex-1">{children}</main>
-                  <Footer />
-                  <ScrollToTop />
-                </div>
+                <AdminAuthProvider>
+                  <div className="relative flex min-h-screen flex-col">
+                    <Header />
+                    <main className="flex-1">{children}</main>
+                    <Footer />
+                    <ScrollToTop />
+                    <HackerLobby />
+                  </div>
+                </AdminAuthProvider>
               </XRayWrapper>
             </NarrationWrapper>
           </PerformanceWrapper>

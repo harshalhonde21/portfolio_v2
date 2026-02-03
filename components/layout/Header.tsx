@@ -7,8 +7,12 @@ import { XRayToggle } from "@/components/xray/XRayToggle";
 import { DegradationSelector } from "@/components/performance/DegradationSelector";
 import { NarrationToggle } from "@/components/narration/NarrationToggle";
 import { MobileNav } from "@/components/layout/MobileNav";
+import { useAdminAuth } from "@/components/providers/AdminAuthProvider";
+import { Lock } from "lucide-react";
+import Link from "next/link";
 
 export function Header() {
+  const { isAuthenticated } = useAdminAuth();
   return (
     <header
       id="header"
@@ -36,6 +40,14 @@ export function Header() {
             <NarrationToggle />
             <XRayToggle />
             <ThemeToggle />
+            {isAuthenticated && (
+              <Link
+                href="/admin"
+                className="text-neon-cyan hover:text-neon-green transition-colors"
+              >
+                <Lock size={18} />
+              </Link>
+            )}
           </div>
 
           {/* Mobile Navigation */}

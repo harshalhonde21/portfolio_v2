@@ -8,29 +8,76 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import { contactApi } from "@/lib/api/contact";
+import { z } from "zod";
+
+const contactSchema = z.object({
+  name: z.string().min(2, "Designation too short"),
+  email: z.string().email("Invalid frequency"),
+  subject: z.string().min(3, "Subject required"),
+  message: z.string().min(10, "Transmission payload too short"),
+});
 
 export function Contact() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    subject: "Portfolio Inquiry",
     message: "",
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const validateForm = () => {
+    try {
+      contactSchema.parse(formData);
+      setErrors({});
+      return true;
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        const newErrors: Record<string, string> = {};
+        // Explicitly cast or access issues
+        err.issues.forEach((issue) => {
+          if (issue.path[0]) {
+            newErrors[issue.path[0] as string] = issue.message;
+          }
+        });
+        setErrors(newErrors);
+      }
+      return false;
+    }
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setErrorMsg(null);
+
+    if (!validateForm()) return;
+
     setIsLoading(true);
 
-    // Simulate network request
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    setIsLoading(false);
-    setIsSuccess(true);
-    setFormData({ name: "", email: "", message: "" });
-
-    // Reset success message after 3 seconds
-    setTimeout(() => setIsSuccess(false), 3000);
+    try {
+      const response = await contactApi.submit(formData);
+      if (response.success) {
+        setIsSuccess(true);
+        setFormData({
+          name: "",
+          email: "",
+          subject: "Portfolio Inquiry",
+          message: "",
+        });
+        // Reset success message after 5 seconds
+        setTimeout(() => setIsSuccess(false), 5000);
+      } else {
+        setErrorMsg(response.message || "Transmission failed.");
+      }
+    } catch (err: any) {
+      setErrorMsg(err.message || "Network error. Connection terminated.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -75,6 +122,11 @@ export function Contact() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
+                {errorMsg && (
+                  <div className="p-3 border border-danger/50 bg-danger/10 text-danger text-xs font-mono">
+                    [!ERROR]: {errorMsg}
+                  </div>
+                )}
                 <div className="space-y-2">
                   <label
                     htmlFor="name"
@@ -84,13 +136,18 @@ export function Contact() {
                   </label>
                   <Input
                     id="name"
-                    required
                     placeholder="Enter your designation..."
                     value={formData.name}
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
+                    className={errors.name ? "border-danger text-danger" : ""}
                   />
+                  {errors.name && (
+                    <span className="text-[10px] text-danger font-mono">
+                      &gt; {errors.name}
+                    </span>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -103,13 +160,43 @@ export function Contact() {
                   <Input
                     id="email"
                     type="email"
-                    required
                     placeholder="Enter frequency..."
                     value={formData.email}
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
                     }
+                    className={errors.email ? "border-danger text-danger" : ""}
                   />
+                  {errors.email && (
+                    <span className="text-[10px] text-danger font-mono">
+                      &gt; {errors.email}
+                    </span>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <label
+                    htmlFor="subject"
+                    className="text-xs font-mono uppercase text-muted-foreground"
+                  >
+                    Protocol_Header (Subject)
+                  </label>
+                  <Input
+                    id="subject"
+                    placeholder="Enter subject..."
+                    value={formData.subject}
+                    onChange={(e) =>
+                      setFormData({ ...formData, subject: e.target.value })
+                    }
+                    className={
+                      errors.subject ? "border-danger text-danger" : ""
+                    }
+                  />
+                  {errors.subject && (
+                    <span className="text-[10px] text-danger font-mono">
+                      &gt; {errors.subject}
+                    </span>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -121,14 +208,18 @@ export function Contact() {
                   </label>
                   <Textarea
                     id="message"
-                    required
                     placeholder="Enter encrypted payload..."
-                    className="min-h-[120px]"
+                    className={`min-h-[120px] ${errors.message ? "border-danger text-danger" : ""}`}
                     value={formData.message}
                     onChange={(e) =>
                       setFormData({ ...formData, message: e.target.value })
                     }
                   />
+                  {errors.message && (
+                    <span className="text-[10px] text-danger font-mono">
+                      &gt; {errors.message}
+                    </span>
+                  )}
                 </div>
 
                 <Button
