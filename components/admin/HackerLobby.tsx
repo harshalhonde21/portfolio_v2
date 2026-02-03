@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAdminAuth } from "@/components/providers/AdminAuthProvider";
 import { authApi } from "@/lib/api/auth";
@@ -24,6 +25,7 @@ const SEQUENCE_TIMEOUT = 2000;
 
 export function HackerLobby() {
   const { login, isAuthenticated } = useAdminAuth();
+  const router = useRouter();
   const { error: toastError, success: toastSuccess } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [phase, setPhase] = useState<"challenge" | "login">("challenge");
@@ -110,6 +112,7 @@ export function HackerLobby() {
       login(token, user);
       toastSuccess("SYSTEM OVERRIDE SUCCESSFUL. WELCOME, ADMIN.");
       setIsOpen(false);
+      router.push("/admin");
 
       // Reset state
       setEmail("");
