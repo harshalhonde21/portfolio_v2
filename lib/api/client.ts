@@ -1,6 +1,6 @@
 import { ApiResponse } from '@/types/api';
 
-const BASE_URL = 'http://localhost:5000/api/v1';
+const BASE_URL = 'https://portfolio-backend-v2-j5lg.onrender.com/api/v1';
 
 class ApiError extends Error {
   constructor(public message: string, public status?: number, public data?: any) {
