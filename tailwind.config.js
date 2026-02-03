@@ -32,6 +32,9 @@ module.exports = {
           blue: "hsl(var(--neon-blue) / <alpha-value>)",
           yellow: "hsl(var(--neon-yellow) / <alpha-value>)",
           orange: "hsl(var(--neon-orange) / <alpha-value>)",
+          teal: "hsl(var(--neon-teal) / <alpha-value>)",
+          lime: "hsl(var(--neon-lime) / <alpha-value>)",
+          electric: "hsl(var(--neon-electric) / <alpha-value>)",
         },
         muted: {
           DEFAULT: "hsl(var(--muted) / <alpha-value>)",
@@ -71,6 +74,12 @@ module.exports = {
         glow: "0 0 10px hsl(var(--primary) / 0.5), 0 0 20px hsl(var(--primary) / 0.3), 0 0 30px hsl(var(--primary) / 0.2)",
         "glow-lg":
           "0 0 15px hsl(var(--primary) / 0.6), 0 0 30px hsl(var(--primary) / 0.4), 0 0 45px hsl(var(--primary) / 0.2)",
+        "neon-teal":
+          "0 0 10px hsl(var(--neon-teal) / 0.5), 0 0 20px hsl(var(--neon-teal) / 0.3)",
+        "neon-lime":
+          "0 0 10px hsl(var(--neon-lime) / 0.5), 0 0 20px hsl(var(--neon-lime) / 0.3)",
+        "neon-electric":
+          "0 0 10px hsl(var(--neon-electric) / 0.5), 0 0 20px hsl(var(--neon-electric) / 0.3)",
       },
       animation: {
         "glow-pulse": "glow-pulse 2s ease-in-out infinite",
@@ -79,6 +88,10 @@ module.exports = {
         "fade-in": "fadeIn 0.5s ease-in-out",
         "slide-up": "slideUp 0.5s ease-out",
         flash: "flash 2s ease-in-out forwards",
+        "spin-slow": "spin-slow 8s linear infinite",
+        "spin-reverse-slow": "spin-reverse-slow 8s linear infinite",
+        "pulse-fast": "pulse-fast 1.5s ease-in-out infinite",
+        "scan-line": "scan-line 3s linear infinite",
       },
       keyframes: {
         flash: {
@@ -115,6 +128,22 @@ module.exports = {
           "60%": { transform: "translate(2px, 2px)" },
           "80%": { transform: "translate(2px, -2px)" },
           "100%": { transform: "translate(0)" },
+        },
+        "spin-slow": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
+        "spin-reverse-slow": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(-360deg)" },
+        },
+        "pulse-fast": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.5" },
+        },
+        "scan-line": {
+          "0%": { transform: "translateY(-100%)" },
+          "100%": { transform: "translateY(100vh)" },
         },
       },
     },

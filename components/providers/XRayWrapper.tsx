@@ -8,6 +8,8 @@
 import { XRayProvider } from "@/lib/xray/XRayContext";
 import { XRayOverlay } from "@/components/xray/XRayOverlay";
 import { XRayScanner } from "@/components/xray/XRayScanner";
+import { XRayBackground } from "@/components/xray/XRayBackground";
+import { XRayWidgets } from "@/components/xray/XRayWidgets";
 import { GlobalSearch } from "@/components/features/GlobalSearch";
 import { ReactNode } from "react";
 
@@ -19,8 +21,10 @@ export function XRayWrapper({ children }: XRayWrapperProps) {
   return (
     <XRayProvider>
       {children}
+      <XRayBackground />
       <XRayOverlay />
       <XRayScanner />
+      <XRayWidgets />
       <GlobalSearch />
     </XRayProvider>
   );
