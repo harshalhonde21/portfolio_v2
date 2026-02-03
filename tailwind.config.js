@@ -30,6 +30,8 @@ module.exports = {
           magenta: "hsl(var(--neon-magenta) / <alpha-value>)",
           purple: "hsl(var(--neon-purple) / <alpha-value>)",
           blue: "hsl(var(--neon-blue) / <alpha-value>)",
+          yellow: "hsl(var(--neon-yellow) / <alpha-value>)",
+          orange: "hsl(var(--neon-orange) / <alpha-value>)",
         },
         muted: {
           DEFAULT: "hsl(var(--muted) / <alpha-value>)",
@@ -76,8 +78,14 @@ module.exports = {
         glitch: "glitch 0.3s infinite",
         "fade-in": "fadeIn 0.5s ease-in-out",
         "slide-up": "slideUp 0.5s ease-out",
+        flash: "flash 2s ease-in-out forwards",
       },
       keyframes: {
+        flash: {
+          "0%": { opacity: "0" },
+          "20%": { opacity: "1" },
+          "100%": { opacity: "0" },
+        },
         fadeIn: {
           "0%": { opacity: "0" },
           "100%": { opacity: "1" },

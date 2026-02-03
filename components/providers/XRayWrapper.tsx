@@ -8,6 +8,7 @@
 import { XRayProvider } from "@/lib/xray/XRayContext";
 import { XRayOverlay } from "@/components/xray/XRayOverlay";
 import { XRayScanner } from "@/components/xray/XRayScanner";
+import { GlobalSearch } from "@/components/features/GlobalSearch";
 import { ReactNode } from "react";
 
 interface XRayWrapperProps {
@@ -20,6 +21,7 @@ export function XRayWrapper({ children }: XRayWrapperProps) {
       {children}
       <XRayOverlay />
       <XRayScanner />
+      <GlobalSearch />
     </XRayProvider>
   );
 }
