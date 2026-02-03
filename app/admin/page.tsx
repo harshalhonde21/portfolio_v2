@@ -9,6 +9,8 @@ import { Heading } from "@/components/ui/Heading";
 import { Button } from "@/components/ui/Button";
 import { Loader2, RefreshCw, LogOut } from "lucide-react";
 import { motion } from "framer-motion";
+import { CyberLoader } from "@/components/ui/CyberLoader";
+import { useToast } from "@/components/providers/ToastProvider";
 
 export default function AdminDashboard() {
   const {
@@ -17,6 +19,8 @@ export default function AdminDashboard() {
     isAuthenticated,
     isLoading: authLoading,
   } = useAdminAuth();
+  const { error: toastError, success: toastSuccess } = useToast();
+
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -27,16 +31,18 @@ export default function AdminDashboard() {
     try {
       setLoading(true);
       const token = authApi.getToken();
-      if (!token) return; // Should be handled by auth provider redirect, but safety first
+      if (!token) return;
 
       const response = await contactApi.getAll(token, page);
       if (response.success && response.data) {
         setContacts(response.data);
         setTotalPages(response.pagination.pages);
         setTotalItems(response.pagination.total);
+        // Optional: toastSuccess("DATA_STREAM_UPDATED");
       }
     } catch (err) {
       console.error("Failed to fetch contacts", err);
+      toastError("CONNECTION_FAILURE: UNABLE TO RETRIEVE DATA");
     } finally {
       setLoading(false);
     }
@@ -50,11 +56,11 @@ export default function AdminDashboard() {
 
   if (authLoading)
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center text-neon-green">
-        INITIALIZING_SECURE_CONNECTION...
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <CyberLoader text="ESTABLISHING SECURE CONNECTION" size="lg" />
       </div>
     );
-  if (!isAuthenticated) return null; // Will redirect via provider
+  if (!isAuthenticated) return null;
 
   return (
     <div className="min-h-screen pt-24 pb-12 px-6 cyber-grid">
@@ -147,11 +153,10 @@ export default function AdminDashboard() {
               <tbody className="divide-y divide-neon-cyan/10">
                 {loading ? (
                   <tr>
-                    <td
-                      colSpan={5}
-                      className="p-12 text-center text-neon-cyan/50 animate-pulse"
-                    >
-                      Scanning database...
+                    <td colSpan={5} className="p-12 text-center">
+                      <div className="flex justify-center">
+                        <CyberLoader text="SCANNING_DATABASE" size="md" />
+                      </div>
                     </td>
                   </tr>
                 ) : contacts.length === 0 ? (

@@ -9,13 +9,14 @@ import {
 } from "react";
 import { AdminUser, AuthResponse } from "@/types/api";
 import { authApi } from "@/lib/api/auth";
+import { useToast } from "@/components/providers/ToastProvider";
 import { usePathname, useRouter } from "next/navigation";
 
 interface AdminAuthContextType {
   user: AdminUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (token: string, user: AdminUser) => void;
+  login: (token: string, userData: AdminUser) => void;
   logout: () => void;
 }
 
@@ -25,25 +26,31 @@ const AdminAuthContext = createContext<AdminAuthContextType | undefined>(
 
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AdminUser | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
+  const { info, success } = useToast();
 
   useEffect(() => {
     const initAuth = async () => {
-      const token = authApi.getToken();
-      if (!token) {
-        setIsLoading(false);
-        return;
-      }
-
       try {
-        const userData = await authApi.verifyToken();
-        setUser(userData);
-      } catch (err) {
-        console.error("Token verification failed:", err);
+        const token = authApi.getToken();
+        if (token) {
+          const response = await authApi.verifyToken();
+          if (response.user) {
+            setUser(response.user);
+            setIsAuthenticated(true);
+          } else {
+            // Token invalid
+            authApi.logout();
+            setUser(null);
+            setIsAuthenticated(false);
+          }
+        }
+      } catch (error) {
+        console.error("Auth check failed", error);
         authApi.logout();
-        setUser(null);
       } finally {
         setIsLoading(false);
       }
@@ -52,40 +59,30 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     initAuth();
   }, []);
 
-  const login = (token: string, newUser: AdminUser) => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("admin_token", token);
-    }
-    setUser(newUser);
-    router.refresh();
+  const login = (token: string, userData: AdminUser) => {
+    localStorage.setItem("admin_token", token);
+    setUser(userData);
+    setIsAuthenticated(true);
   };
 
   const logout = () => {
     authApi.logout();
     setUser(null);
+    setIsAuthenticated(false);
+    info("SESSION TERMINATED. DISCONNECTED.");
     router.push("/");
-    router.refresh();
   };
 
   // Route protection logic could be here or in a separate guard component
-  // For strict protection, we can check pathname here.
   useEffect(() => {
-    if (!isLoading && !user && pathname?.startsWith("/admin")) {
-      // Hard redirect if trying to access admin without auth
-      // Excluding login page if it exists (but we use a modal)
-      router.replace("/");
+    if (!isLoading && !isAuthenticated && pathname.startsWith("/admin")) {
+      router.push("/");
     }
-  }, [user, isLoading, pathname, router]);
+  }, [isLoading, isAuthenticated, pathname, router]);
 
   return (
     <AdminAuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        isLoading,
-        login,
-        logout,
-      }}
+      value={{ user, isAuthenticated, isLoading, login, logout }}
     >
       {children}
     </AdminAuthContext.Provider>

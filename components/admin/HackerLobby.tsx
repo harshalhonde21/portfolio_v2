@@ -8,7 +8,10 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { X } from "lucide-react";
 
-// Key sequence: Up, Up, Down, Down, b, a (Konami-ish)
+import { CyberLoader } from "@/components/ui/CyberLoader";
+import { useToast } from "@/components/providers/ToastProvider";
+
+// ... (imports remain)
 const SECRET_SEQUENCE = [
   "ArrowUp",
   "ArrowUp",
@@ -21,6 +24,7 @@ const SEQUENCE_TIMEOUT = 2000;
 
 export function HackerLobby() {
   const { login, isAuthenticated } = useAdminAuth();
+  const { error: toastError, success: toastSuccess } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [phase, setPhase] = useState<"challenge" | "login">("challenge");
   const [inputBuffer, setInputBuffer] = useState<string[]>([]);
@@ -29,13 +33,12 @@ export function HackerLobby() {
   // Login form state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   // Challenge state
   const [challengePass, setChallengePass] = useState("");
 
-  // Key listener
+  // Key listener (same as before)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Ignore if typing in an input field (unless it's the sequence trigger which shouldn't happen usually in inputs but let's be safe)
@@ -64,7 +67,7 @@ export function HackerLobby() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, lastInputTime]);
 
-  // Check sequence
+  // Check sequence (same as before)
   useEffect(() => {
     if (inputBuffer.length > SECRET_SEQUENCE.length) {
       // Trim buffer to keep only last N keys
@@ -88,28 +91,32 @@ export function HackerLobby() {
     e.preventDefault();
     // Hardcoded challenge passphrase for "Hacker" feel
     if (challengePass === "matrix") {
+      toastSuccess("ACCESS GRANTED: LEVEL 1", 2000);
       setPhase("login");
-      setError(null);
     } else {
-      setError("ACCESS DENIED");
-      setTimeout(() => setError(null), 2000);
+      toastError("ACCESS DENIED: INVALID PASSPHRASE");
+      // Add shake effect ideally, but toast covers visibility
     }
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
     try {
       const { token, user } = await authApi.login(email, password);
+      // Artificial delay to show off cool loader
+      await new Promise((r) => setTimeout(r, 1500));
+
       login(token, user);
+      toastSuccess("SYSTEM OVERRIDE SUCCESSFUL. WELCOME, ADMIN.");
       setIsOpen(false);
+
       // Reset state
       setEmail("");
       setPassword("");
       setChallengePass("");
     } catch (err: any) {
-      setError(err.message || "Authentication failed");
+      toastError(err.message || "AUTHENTICATION FAILED");
     } finally {
       setIsLoading(false);
     }
@@ -137,6 +144,7 @@ export function HackerLobby() {
             exit={{ scale: 0.9, y: 20 }}
             className="relative w-full max-w-md p-8 border border-neon-green bg-black shadow-[0_0_30px_rgba(0,255,0,0.2)]"
           >
+            {/* Borders (same as before) */}
             <div className="absolute top-0 left-0 w-2 h-2 bg-neon-green"></div>
             <div className="absolute top-0 right-0 w-2 h-2 bg-neon-green"></div>
             <div className="absolute bottom-0 left-0 w-2 h-2 bg-neon-green"></div>
@@ -154,13 +162,11 @@ export function HackerLobby() {
               </button>
             </div>
 
-            {error && (
-              <div className="mb-4 p-2 bg-red-900/20 border border-red-500 text-red-500 text-xs animate-pulse">
-                [!ERROR]: {error}
+            {isLoading ? (
+              <div className="py-12">
+                <CyberLoader text="DECRYPTING CREDENTIALS" />
               </div>
-            )}
-
-            {phase === "challenge" ? (
+            ) : phase === "challenge" ? (
               <form onSubmit={handleChallengeSubmit} className="space-y-6">
                 <div className="space-y-2">
                   <label className="text-xs text-neon-green/70 uppercase">
@@ -231,7 +237,7 @@ export function HackerLobby() {
                   disabled={isLoading}
                   className="w-full bg-neon-green/10 border border-neon-green text-neon-green hover:bg-neon-green hover:text-black transition-all rounded-none"
                 >
-                  {isLoading ? "AUTHENTICATING..." : "ESTABLISH_SESSION"}
+                  ESTABLISH_SESSION
                 </Button>
               </form>
             )}
