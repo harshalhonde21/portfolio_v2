@@ -49,7 +49,7 @@ export function About() {
               {/* Profile container with corner brackets */}
               <div className="relative w-64 h-64 sharp border-2 border-primary/50 bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center corner-brackets overflow-hidden group">
                 <Image
-                  src="/profile-pic.png"
+                  src="/harshal.jpeg"
                   alt={PERSONAL_INFO.name}
                   fill
                   className="object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500 grayscale group-hover:grayscale-0"

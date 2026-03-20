@@ -32,8 +32,8 @@ export const siteMetadata: Metadata = {
   creator: PERSONAL_INFO.name,
   publisher: PERSONAL_INFO.name,
   icons: {
-    icon: '/profile-placeholder.png',
-    apple: '/profile-placeholder.png',
+    icon: '/harshal.jpeg',
+    apple: '/harshal.jpeg',
   },
   openGraph: {
     type: 'website',
@@ -44,16 +44,10 @@ export const siteMetadata: Metadata = {
     siteName: SITE_CONFIG.name,
     images: [
       {
-        url: '/profile-pic.png', // Using high-res profile pic for OG
+        url: '/harshal.jpeg', // Using high-res profile pic for OG
         width: 1200,
         height: 630,
         alt: `${PERSONAL_INFO.name} - ${PERSONAL_INFO.title}`,
-      },
-      {
-        url: '/profile-placeholder.png',
-        width: 500,
-        height: 500,
-        alt: `${PERSONAL_INFO.name} Avatar`,
       }
     ],
   },
@@ -61,7 +55,7 @@ export const siteMetadata: Metadata = {
     card: 'summary_large_image',
     title: `${PERSONAL_INFO.name} | ${PERSONAL_INFO.title}`,
     description: PERSONAL_INFO.bio,
-    images: ['/profile-pic.png'],
+    images: ['/harshal.jpeg'],
     creator: SITE_CONFIG.twitterHandle,
     site: SITE_CONFIG.twitterHandle,
   },
@@ -92,7 +86,7 @@ export function getPersonStructuredData() {
     email: PERSONAL_INFO.email,
     telephone: PERSONAL_INFO.number,
     url: SITE_CONFIG.url,
-    image: `${SITE_CONFIG.url}/profile-pic.png`,
+    image: `${SITE_CONFIG.url}/harshal.jpeg`,
     description: PERSONAL_INFO.bio,
     address: {
       '@type': 'PostalAddress',
